@@ -1,23 +1,46 @@
 pragma solidity ^0.8.0;
 
 contract Layer2SmartRouter {
-    mapping(address => mapping(address => uint256)) private routeCosts;
-
-    function setRouteCost(address from, address to, uint256 cost) external {
-        routeCosts[from][to] = cost;
+    struct Layer2Network {
+        uint256 cost;
+        uint256 latency;
     }
 
-    function getBestRoute(address from, address to) external view returns (address[] memory) {
-        // Implement your artificial intelligence algorithm here
-        // to find the best route using the routeCosts mapping.
-        // This is a placeholder implementation that simply returns a direct route.
+    mapping(address => Layer2Network) private layer2Networks;
 
-        require(routeCosts[from][to] > 0, "No valid route found");
+    function setNetworkProperties(address networkAddress, uint256 cost, uint256 latency) external {
+        require(cost > 0, "Cost must be greater than zero");
+        require(latency > 0, "Latency must be greater than zero");
 
-        address[] memory path = new address[](2);
-        path[0] = from;
-        path[1] = to;
-
-        return path;
+        Layer2Network storage network = layer2Networks[networkAddress];
+        network.cost = cost;
+        network.latency = latency;
     }
+
+    function getBestLayer2(address[] memory networkAddresses) external view returns (address) {
+        require(networkAddresses.length > 0, "At least one network address must be provided");
+
+        address bestLayer2 = networkAddresses[0];
+        uint256 bestScore = getNetworkScore(layer2Networks[bestLayer2]);
+
+        for (uint256 i = 1; i < networkAddresses.length; i++) {
+            address currentLayer2 = networkAddresses[i];
+            uint256 currentScore = getNetworkScore(layer2Networks[currentLayer2]);
+
+            if (currentScore < bestScore) {
+                bestLayer2 = currentLayer2;
+                bestScore = currentScore;
+            }
+        }
+
+        return bestLayer2;
+    }
+
+    function getNetworkScore(Layer2Network memory network) private pure returns (uint256) {
+        // Calculate the score based on predefined criteria.
+        // This is a simplified example that assigns equal weightage to cost and latency.
+        return network.cost + network.latency;
+    }
+
+    // Routing functions can be added here
 }
