@@ -1,4 +1,4 @@
-pragma solidity ^0.8.0;
+pragma solidity 0.8.18;
 
 contract Layer2SmartRouter {
     struct Layer2Network {
@@ -42,5 +42,5 @@ contract Layer2SmartRouter {
         return network.cost + network.latency;
     }
 
-    // Routing functions can be added here
+    // Routing functions to be added here
 }
